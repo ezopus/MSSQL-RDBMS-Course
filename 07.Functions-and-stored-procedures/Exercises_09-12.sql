@@ -39,8 +39,6 @@ GO
 
 
 -- Exercise 11
-
-
 CREATE OR ALTER FUNCTION ufn_CalculateFutureValue (@sum DECIMAL(18,4), @yearlyRate FLOAT, @years INT)
 RETURNS DECIMAL(18,4)
 AS
@@ -56,3 +54,21 @@ SELECT [dbo].[ufn_CalculateFutureValue](1000.98, 0.05, 3)
 
 GO
 
+
+-- Exercise 12
+CREATE OR ALTER PROC usp_CalculateFutureValueForAccount (@id INT, @rate FLOAT)
+AS
+BEGIN
+	SELECT [a].Id AS [Account Id]
+		   , [ah].[FirstName] AS [First Name]
+		   , [ah].[LastName] AS [Last Name]
+		   , [a].[Balance] AS [Current Balance]
+		   , [dbo].[ufn_CalculateFutureValue]([a].Balance, @rate, 5) AS [Balance in 5 years]
+	  FROM [AccountHolders] AS [ah]
+	  JOIN [Accounts] AS [a] ON [ah].[Id] = [a].[AccountHolderId]
+	 WHERE [ah].[Id] = @id
+END
+
+GO
+
+EXEC [dbo].[usp_CalculateFutureValueForAccount] 1, 0.1
