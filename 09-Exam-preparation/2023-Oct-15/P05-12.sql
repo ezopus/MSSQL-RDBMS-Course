@@ -1,12 +1,12 @@
 -- Problem 05
-SELECT CAST([b].[ArrivalDate] AS DATE) AS [ArrivalDate],
-	   [b].AdultsCount,
-	   [b].ChildrenCount
-FROM [Bookings] 
-AS [b]
-JOIN [Rooms]
-AS [r]
-ON [b].[RoomId] = [r].[Id]
+  SELECT FORMAT([b].[ArrivalDate], 'yyyy-MM-dd') AS [ArrivalDate],
+  	     [b].AdultsCount,
+         [b].ChildrenCount
+    FROM [Bookings] 
+      AS [b]
+    JOIN [Rooms]
+      AS [r]
+      ON [b].[RoomId] = [r].[Id]
 ORDER BY [r].[Price] DESC, [b].[ArrivalDate]
 
 
@@ -66,45 +66,35 @@ LEFT JOIN [Bookings]
 
 SELECT [h].[Name] AS [HotelName],
 	   [r].[Price] AS [RoomPrice]
-FROM [Hotels]
-AS [h]
-JOIN [HotelsRooms]
-AS [hr]
-ON [hr].[HotelId] = [h].[Id]
-JOIN [Rooms]
-AS [r]
-ON [r].[Id] = [hr].[RoomId]
+FROM [Tourists]
+AS [to]
 JOIN [Bookings]
 AS [b]
-ON [b].[HotelId] = [h].[Id]
-JOIN [Tourists]
-AS [to]
 ON [to].[Id] = [b].[TouristId]
+JOIN [Hotels]
+AS [h]
+ON [h].[Id] = [b].[HotelId]
+JOIN [Rooms]
+AS [r]
+ON [b].[RoomId] = [r].[Id]
 WHERE (RIGHT([to].[Name], 2) <> 'EZ')
-	  AND
-	  [h].[Id] IN (
-					SELECT [b].[HotelId]
-					  FROM [Tourists] AS [to]
-				      JOIN [Bookings] AS [b]
-  					    ON [to].[Id] = [b].[TouristId]
-					  JOIN [Rooms] AS [r]
-					    ON [r].[Id] = [b].[RoomId]
-					 WHERE (RIGHT([to].[Name], 2) <> 'EZ')
-				  GROUP BY [b].[HotelId]
-					)
-	  AND
-	  [r].[Id] IN (
-					SELECT [b].[RoomId]
-					  FROM [Tourists] AS [to]
-					  JOIN [Bookings] AS [b]
-  					    ON [to].[Id] = [b].[TouristId]
-					 WHERE (RIGHT([to].[Name], 2) <> 'EZ')
-				  GROUP BY [b].[RoomId]
-					)
-	  
+ORDER BY [RoomPrice] DESC
 
---GROUP BY [h].[Name]
-ORDER BY [r].[Price] DESC
+SELECT
+    H.Name AS HotelName,
+    R.Price AS RoomPrice
+FROM
+    Tourists AS T
+JOIN
+    Bookings AS B ON T.Id = B.TouristId
+JOIN
+    Hotels AS H ON B.HotelId = H.Id
+JOIN
+    Rooms AS R ON B.RoomId = R.Id
+WHERE
+    RIGHT(T.Name, 2) != 'EZ'  -- Select tourists whose names do not end in "EZ"
+ORDER BY
+    R.Price DESC
 
 
 SELECT * FROM [Hotels]
@@ -118,39 +108,38 @@ SELECT * FROM [Tourists] AS [to] WHERE (RIGHT([to].[Name], 2) <> 'EZ')
 
 
 -- Problem 10
--- TO DO
-  SELECT [h].[Name] AS [HotelName],
-         DATEDIFF(day, [b].[ArrivalDate], [b].DepartureDate) * (
-														  	   SELECT [ro].[Price] 
-														  	   FROM [Rooms]
-														  	   AS [ro]
-														  	   WHERE [ro].[Id] = [b].[Id]
-														  	   ) 
-	  AS [NightsCount]
-	FROM [Hotels]
-	  AS [h]
-	JOIN [HotelsRooms]
-	  AS [hr]
-	  ON [hr].[HotelId] = [h].[Id]
-	JOIN [Rooms]
-	  AS [r]
-	  ON [r].[Id] = [hr].[RoomId]
-    JOIN [Bookings]
-	  AS [b]
-	  ON [h].[Id] = [b].[HotelId]
-GROUP BY [h].[Name]
 
-SELECT DATEDIFF(day, [b].[ArrivalDate], [b].DepartureDate) * (
-														  	   SELECT [ro].[Price] 
-														  	   FROM [Rooms]
-														  	   AS [ro]
-															   JOIN [Bookings]
-															   AS [bo]
-															   ON [ro].Id = [bo].[RoomId]
-														  	   WHERE [bo].[RoomId] = [ro].[Id]
-														  	 )
-FROM [Bookings]
-AS [b]
+--SELECT * FROM [Rooms]
+
+--SELECT * FROM [Hotels]
+
+--SELECT * FROM [HotelsRooms]
+
+--SELECT * FROM [Bookings]
+
+SELECT [dt].HotelName,
+		SUM([dt].TotalPrice) AS [HotelRevenue]
+FROM (
+		SELECT [h].[Name] AS [HotelName],
+			   DATEDIFF(day, [b].[ArrivalDate], [b].DepartureDate)
+			AS [Nights],
+			   DATEDIFF(day, [b].[ArrivalDate], [b].DepartureDate) * (
+															          SELECT [ro].[Price]
+																	    FROM [Rooms] AS [ro]
+																	   WHERE [ro].[Id] = [b].[RoomId]
+																	 )
+            AS [TotalPrice]
+		  FROM [Bookings]
+			AS [b]
+		  JOIN [Hotels]
+			AS [h]
+			ON [h].[Id] = [b].[HotelId]
+		LEFT JOIN [HotelsRooms]
+			AS [hr]
+			ON [hr].[HotelId] = [b].[HotelId] AND [hr].[RoomId] = [b].[RoomId]
+	 ) AS [dt]
+GROUP BY [dt].HotelName
+ORDER BY [HotelRevenue] DESC
 
 
 -- Problem 11
