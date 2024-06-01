@@ -68,7 +68,7 @@ LEFT JOIN EmployeesProjects AS ep
 	   ON e.EmployeeID = ep.EmployeeID
 	 JOIN Projects AS p 
 	   ON ep.ProjectID = p.ProjectID
-WHERE DATEPART(YEAR, p.StartDate) > '13.08.2002' AND p.EndDate IS NULL
+WHERE p.StartDate > DATEFROMPARTS(2002, 08, 13) AND p.EndDate IS NULL
 ORDER BY e.EmployeeID
 
 -- Exercise 08

@@ -39,8 +39,8 @@ GO
 
 
 -- Exercise 11
-CREATE OR ALTER FUNCTION ufn_CalculateFutureValue (@sum DECIMAL(18,4), @yearlyRate FLOAT, @years INT)
-RETURNS DECIMAL(18,4)
+CREATE OR ALTER FUNCTION ufn_CalculateFutureValue (@sum DECIMAL(16,4), @yearlyRate FLOAT, @years INT)
+RETURNS DECIMAL(16,4)
 AS
 BEGIN
 	DECLARE @futureValueOutput DECIMAL(18,4) = @sum * (POWER((1 + @yearlyRate), @years))
@@ -66,9 +66,10 @@ BEGIN
 		   , [dbo].[ufn_CalculateFutureValue]([a].Balance, @rate, 5) AS [Balance in 5 years]
 	  FROM [AccountHolders] AS [ah]
 	  JOIN [Accounts] AS [a] ON [ah].[Id] = [a].[AccountHolderId]
-	 WHERE [ah].[Id] = @id
+	 WHERE [a].[Id] = @id
 END
 
 GO
 
 EXEC [dbo].[usp_CalculateFutureValueForAccount] 1, 0.1
+
