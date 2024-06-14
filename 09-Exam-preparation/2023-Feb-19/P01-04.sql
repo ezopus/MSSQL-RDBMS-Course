@@ -73,3 +73,24 @@ VALUES
 ('Agman Games', 5, 'www.agmangames.com', '+16546135542'),
 ('Amethyst Games', 7, 'www.amethystgames.com', '+15558889992'),
 ('BattleBooks', 13, 'www.battlebooks.com', '+12345678907')
+
+
+-- Problem 03
+UPDATE [PlayersRanges]
+SET [PlayersMax] = 3
+WHERE [PlayersMin] = 2 AND [PlayersMax] = 2
+
+UPDATE [BoardGames]
+SET [Name] = [Name] + 'V2'
+WHERE [YearPublished] >= 2020
+
+
+-- Problem 04
+
+DELETE FROM [CreatorsBoardgames] WHERE [BoardgameId] IN (SELECT [Id] FROM [Boardgames] WHERE [PublisherId] = 1)
+
+DELETE FROM [Boardgames] WHERE [PublisherId] IN (SELECT [Id] FROM [Publishers] WHERE [AddressId] = 5)
+
+DELETE FROM [Publishers] WHERE [AddressId] IN (SELECT [Id] FROM [Addresses] WHERE LEFT ([Town], 1) = 'L')
+
+DELETE FROM [Addresses] WHERE LEFT([Town], 1) = 'L'

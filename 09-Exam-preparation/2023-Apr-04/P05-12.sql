@@ -114,6 +114,7 @@ END
 
 GO
 
+SELECT dbo.udf_ProductWithClients('DAF FILTER HU12103X')
 
 -- Problem 12
 GO
