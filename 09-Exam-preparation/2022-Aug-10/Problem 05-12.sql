@@ -16,20 +16,16 @@ ON s.CategoryId = c.Id
 ORDER BY [Category] DESC, [Location], [Site]
 
 -- Problem 07
-SELECT *
-FROM (
-		SELECT [l].[Province],
-			   [l].[Municipality],
-			   [l].[Name] AS [Location],
-			   COUNT([l].[Id]) AS [CountOfSites]
-		FROM [Sites] AS [s]
-		JOIN [Locations] AS [l]
-		ON [s].LocationId = [l].Id
-		GROUP BY [l].Province, [l].[Municipality], [l].[Name]
-	 ) 
-  AS [dt]
-WHERE [dt].Province = 'Sofia'
-ORDER BY [dt].CountOfSites DESC, [dt].Location
+SELECT [l].[Province],
+	   [l].[Municipality],
+	   [l].[Name] AS [Location],
+	   COUNT([l].[Id]) AS [CountOfSites]
+FROM [Sites] AS [s]
+JOIN [Locations] AS [l]
+ON [s].LocationId = [l].Id
+WHERE Province = 'Sofia'
+GROUP BY [l].Province, [l].[Municipality], [l].[Name]
+ORDER BY CountOfSites DESC, Location
 
 
 -- Problem 08
